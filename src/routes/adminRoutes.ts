@@ -12,11 +12,9 @@ import { verifyAccessToken } from "../utils/jwt";
 
 const router = express.Router();
 
-router.post("/register", registerUser);
-router.post("/login", login);
-router.post("/refresh-token", refreshToken);
-router.put("/profile", verifyToken, updateUserProfile);
-router.delete("/:id", verifyToken, deleteUser);
-router.get("/me", verifyToken, getUserProfile);
+router.post("/", login);
+router.get("/users", getUsers);
+router.delete("/users/:id", deleteUser);
+router.put("/users/:id", updateUserProfile);
 
 export default router;

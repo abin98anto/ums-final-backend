@@ -1,8 +1,6 @@
-import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-// dotenv.config();
 
-const verifyToken = (req: any, res: Response, next: NextFunction) => {
+const verifyToken = (req: any, res: any, next: any) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {

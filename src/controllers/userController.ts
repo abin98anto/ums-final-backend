@@ -5,8 +5,8 @@ import { verifyAccessToken } from "../utils/jwt";
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, imageURL } = req.body;
-
+    const { name, email, password, photo } = req.body;
+    const imageURL = photo;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       res.status(400).json({ message: "User already exists" });
@@ -21,7 +21,6 @@ export const registerUser = async (req: Request, res: Response) => {
     });
 
     await newUser.save();
-    console.log("come on ; ", newUser);
     res.status(201).json({ message: "User registered successfully" });
     return;
   } catch (error) {

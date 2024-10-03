@@ -6,6 +6,7 @@ import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 
 export const login = async (req: Request, res: Response) => {
   try {
+    console.log("in the be", req.body);
     const { email, password } = req.body;
     const user = await User.findOne({ email });
 
@@ -34,6 +35,7 @@ export const login = async (req: Request, res: Response) => {
         imageURL: user.imageURL,
       },
     });
+    console.log("welcome hoem00");
     return;
   } catch (error) {
     res.status(500).json({ message: "Server error" });
