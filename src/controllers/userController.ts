@@ -1,44 +1,29 @@
 import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
-import { User } from "../models/user";
+import User, { IUser } from "../models/user";
+import bcrypt from "bcrypt";
 
-const users: User[] = [];
+export const registerUser = async (req: Request, res: Response) => {
+  try {
+    const { name, email, password, imageURL } = req.body;
 
-export const register = async (req: Request, res: Response): Promise<void> => {
-  const { name, email, password, confirmPassword } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      res.status(400).json({ message: "User already exists" });
+      return;
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser: IUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      imageURL,
+    });
 
-  if (password !== confirmPassword) {
-    res.status(400).json({ message: "Passwords do not match" });
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser: User = {
-    id: Date.now().toString(),
-    name,
-    email,
-    password: hashedPassword,
-  };
-  users.push(newUser);
-
-  res.status(201).json({ message: "User registered successfully" });
-};
-
-export const login = async (req: Request, res: Response): Promise<void> => {
-  const { email, password } = req.body;
-  const user = users.find((user) => user.email === email);
-  if (!user) {
-    res.status(400).json({ message: "Invalid email or password" });
+    await newUser.save();
+    console.log("come on ; ", newUser);
+    res.status(201).json({ message: "User registered successfully" });
     return;
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
-
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) {
-    res.status(400).json({ message: "Invalid email or password" });
-  }
-
-  const accessToken = generateAccessToken(user.id);
-  const refreshToken = generateRefreshToken(user.id);
-
-  res.json({ accessToken, refreshToken });
 };

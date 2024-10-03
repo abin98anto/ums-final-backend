@@ -1,29 +1,45 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-export interface CustomRequest extends Request {
-  userId?: string;
+interface AuthRequest extends Request {
+  user?: {
+    userId: string;
+    role: string;
+  };
 }
 
-const authMiddleware = (
-  req: CustomRequest,
+export const authenticateToken = (
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.header("Authorization")?.replace("Bearer ", "");
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
   if (!token) {
-    return res.status(401).json({ msg: "No token, authorization denied" });
+    return res.status(401).json({ message: "Access token is required" });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-      id: string;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+      userId: string;
+      role: string;
     };
-    req.userId = decoded.id;
+    req.user = decoded;
     next();
-  } catch (err) {
-    res.status(401).json({ msg: "Token is not valid" });
+  } catch (error) {
+    return res.status(403).json({ message: "Invalid access token" });
   }
 };
 
-export default authMiddleware;
+export const authorizeAdmin = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  if (req.user && req.user.role === "admin") {
+    next();
+  } else {
+    res.status(403).json({ message: "Admin access required" });
+  }
+};
