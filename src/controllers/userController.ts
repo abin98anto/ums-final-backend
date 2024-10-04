@@ -30,7 +30,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
 export const getUsers = async (req: any, res: any) => {
   try {
-    const users = await User.find();
+    const users = await User.find({ role: "user" });
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -38,10 +38,11 @@ export const getUsers = async (req: any, res: any) => {
 };
 
 export const updateUserProfile = async (req: any, res: any) => {
-  const { id, name, email, imageURL } = req.body;
-  const userId = id;
-
   try {
+    const { id } = req.params;
+    const { name, email, imageURL } = req.body;
+    const userId = id;
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { name, email, imageURL },
@@ -68,7 +69,7 @@ export const getUserProfile = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  console.log("getting user profile...");
+  
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
     if (!token) {

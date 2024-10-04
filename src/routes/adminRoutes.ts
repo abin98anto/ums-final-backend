@@ -6,13 +6,13 @@ import {
   deleteUser,
   getUserProfile,
 } from "../controllers/userController";
-import { login, refreshToken } from "../controllers/authController";
+import { login, refreshToken, adminLogin } from "../controllers/authController";
 import { verifyToken } from "../middleware/authMiddleware";
 import { verifyAccessToken } from "../utils/jwt";
 
 const router = express.Router();
 
-router.post("/", login);
+router.post("/login", adminLogin);
 router.get("/users", getUsers);
 router.delete("/users/:id", deleteUser);
 router.put("/users/:id", updateUserProfile);

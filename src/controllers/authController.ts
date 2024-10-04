@@ -6,7 +6,6 @@ import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 
 export const login = async (req: Request, res: Response) => {
   try {
-    console.log("in the be", req.body);
     const { email, password } = req.body;
     const user = await User.findOne({ email });
 
@@ -22,7 +21,7 @@ export const login = async (req: Request, res: Response) => {
       return;
     }
 
-    const accessToken = generateAccessToken(user.id);
+    const accessToken = generateAccessToken(user.id, "user");
     const refreshToken = generateRefreshToken(user.id);
 
     res.json({
@@ -35,7 +34,6 @@ export const login = async (req: Request, res: Response) => {
         imageURL: user.imageURL,
       },
     });
-    console.log("welcome hoem00");
     return;
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -71,5 +69,40 @@ export const refreshToken = async (req: Request, res: Response) => {
     res.json({ accessToken });
   } catch (error) {
     res.status(401).json({ message: "Invalid refresh token" });
+  }
+};
+
+export const adminLogin = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    const admin = await User.findOne({ email });
+
+    if (!admin) {
+      res.status(400).json({ message: "Invalid credentials" });
+      return;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
+
+    if (!isPasswordValid) {
+      res.status(400).json({ message: "Invalid credentials" });
+      return;
+    }
+
+    const accessToken = generateAccessToken(admin.id, "admin");
+    const refreshToken = generateRefreshToken(admin.id);
+
+    res.json({
+      accessToken,
+      refreshToken,
+      admin: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+      },
+    });
+    return;
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
 };
