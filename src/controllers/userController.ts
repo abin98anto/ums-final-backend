@@ -71,23 +71,21 @@ export const getUserProfile = async (
 ): Promise<void> => {
   
   try {
-    const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+    const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      res.sendStatus(401); // Unauthorized if no token is present
+      res.sendStatus(401);
       return;
     }
 
     const decoded = verifyAccessToken(token);
     const userId = decoded;
 
-    // Fetch the user from the database
-    const user = await User.findById(userId).select("-password"); // Exclude password from response
+    const user = await User.findById(userId).select("-password");
     if (!user) {
       res.sendStatus(404);
       return;
     }
 
-    // Send user data as response
     res.json({
       id: user._id,
       name: user.name,

@@ -75,7 +75,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 export const adminLogin = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const admin = await User.findOne({ email });
+    const admin = await User.findOne({ email, role: "admin" });
 
     if (!admin) {
       res.status(400).json({ message: "Invalid credentials" });

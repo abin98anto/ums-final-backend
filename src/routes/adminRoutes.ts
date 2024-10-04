@@ -1,14 +1,10 @@
 import express from "express";
 import {
-  registerUser,
   getUsers,
   updateUserProfile,
   deleteUser,
-  getUserProfile,
 } from "../controllers/userController";
-import { login, refreshToken, adminLogin } from "../controllers/authController";
-import { verifyToken } from "../middleware/authMiddleware";
-import { verifyAccessToken } from "../utils/jwt";
+import { adminLogin } from "../controllers/authController";
 
 const router = express.Router();
 

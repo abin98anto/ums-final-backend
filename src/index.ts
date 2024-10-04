@@ -3,18 +3,16 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes";
-// import authRoutes from "./routes/authRoutes";
 import adminRoutes from "./routes/adminRoutes";
 
 dotenv.config();
 
 const app = express();
 
-// app.use(cors());
 app.use(
   cors({
-    origin: "http://localhost:5173", // Your frontend's URL
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+    origin: "http://localhost:5173",
+    credentials: true,
   })
 );
 app.use(express.json());
